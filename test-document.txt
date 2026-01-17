@@ -1,0 +1,6 @@
+This is a test document for complaint attachment.
+
+It contains some sample text to demonstrate file upload functionality.
+
+Date: January 8, 2026
+Purpose: Testing file attachment system

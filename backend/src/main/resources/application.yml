@@ -1,0 +1,65 @@
+spring:
+  application:
+    name: complaint-portal
+  
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+  
+  h2:
+    console:
+      enabled: true
+  
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+    defer-datasource-initialization: true
+  
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:anonymous200091@gmail.com}
+    password: ${MAIL_PASSWORD:evnohdwghdsgui qs}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            enable: false
+          connectiontimeout: 10000
+          timeout: 10000
+          writetimeout: 10000
+        debug: false
+  
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 200MB
+
+server:
+  port: 8080
+
+app:
+  jwt:
+    secret: mySecretKeyForComplaintPortalApplicationThatIsSecureEnoughForJWTHMACSHA256Algorithm
+    expiration: 86400000 # 24 hours
+  
+  file:
+    upload-dir: ./uploads
+  
+  email:
+    test-mode: false # Set to true to save emails to files instead of sending
+
+logging:
+  level:
+    com.resolve: DEBUG
