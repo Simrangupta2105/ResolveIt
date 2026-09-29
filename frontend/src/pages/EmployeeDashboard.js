@@ -55,10 +55,6 @@ const EmployeeDashboard = () => {
     fetchDashboardData();
   });
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
-
   const fetchDashboardData = async () => {
     try {
       const [
@@ -128,6 +124,10 @@ const EmployeeDashboard = () => {
       // Don't show error to user as this is a secondary feature
     }
   };
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
 
   const markNoteAsRead = async (noteId) => {
     try {

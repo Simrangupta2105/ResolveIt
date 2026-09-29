@@ -15,7 +15,7 @@ const MyComplaints = () => {
     if (currentUser) {
       fetchMyComplaints();
     }
-  }, [currentUser, currentPage]);
+  }, [currentUser, currentPage, fetchMyComplaints]);
 
   const fetchMyComplaints = async () => {
     try {

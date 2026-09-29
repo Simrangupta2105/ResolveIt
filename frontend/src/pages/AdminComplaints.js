@@ -83,7 +83,7 @@ const AdminComplaints = () => {
     if (isAdmin) {
       fetchUsers();
     }
-  }, [currentPage, filters, isAdmin]);
+  }, [currentPage, filters, isAdmin, fetchComplaints, fetchUsers]);
 
   const handleFilterChange = (e) => {
     setFilters({

@@ -20,7 +20,7 @@ const EmployeeRequests = () => {
     } else {
       setLoading(false);
     }
-  }, [currentUser]);
+  }, [currentUser, isAdmin, fetchRequests]);
 
   const isAdmin = () => {
     return currentUser?.roles?.some(role => role.authority === 'ROLE_ADMIN');

@@ -15,10 +15,6 @@ const ComplaintStatus = () => {
   });
   const [showUpdateForm, setShowUpdateForm] = useState(false);
 
-  useEffect(() => {
-    fetchComplaint();
-  }, [complaintId]);
-
   const fetchComplaint = async () => {
     try {
       const response = await axios.get(`/api/complaints/${complaintId}`);
@@ -34,6 +30,10 @@ const ComplaintStatus = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchComplaint();
+  }, [complaintId]);
 
   const handleStatusUpdate = async (e) => {
     e.preventDefault();
