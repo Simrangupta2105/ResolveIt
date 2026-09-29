@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
@@ -11,13 +11,7 @@ const MyComplaints = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
-  useEffect(() => {
-    if (currentUser) {
-      fetchMyComplaints();
-    }
-  }, [currentUser, currentPage, fetchMyComplaints]);
-
-  const fetchMyComplaints = async () => {
+  const fetchMyComplaints = useCallback(async () => {
     try {
       const response = await axios.get(`/api/complaints/my?page=${currentPage}&size=10`);
       setComplaints(response.data.content);
@@ -27,7 +21,13 @@ const MyComplaints = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (currentUser) {
+      fetchMyComplaints();
+    }
+  }, [currentUser, currentPage, fetchMyComplaints]);
 
   const getStatusClass = (status) => {
     if (!status) return 'status status-unknown';

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useComplaintNotifications } from '../hooks/useWebSocket';
@@ -48,7 +48,7 @@ const AdminComplaints = () => {
     selectedEmployeeId: ''
   });
 
-  const fetchComplaints = async () => {
+  const fetchComplaints = useCallback(async () => {
     try {
       console.log('Fetching complaints with filters:', filters);
       const params = new URLSearchParams({
@@ -67,23 +67,26 @@ const AdminComplaints = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, filters]);
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const response = await axios.get('/api/admin/assignable-users');
       setUsers(response.data);
     } catch (error) {
       console.error('Error fetching assignable users:', error);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchComplaints();
+  }, [currentPage, filters, fetchComplaints]);
+
+  useEffect(() => {
     if (isAdmin) {
       fetchUsers();
     }
-  }, [currentPage, filters, isAdmin, fetchComplaints, fetchUsers]);
+  }, [isAdmin, fetchUsers]);
 
   const handleFilterChange = (e) => {
     setFilters({

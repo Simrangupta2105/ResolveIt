@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useComplaintNotifications } from '../hooks/useWebSocket';
@@ -55,7 +55,27 @@ const EmployeeDashboard = () => {
     fetchDashboardData();
   });
 
-  const fetchDashboardData = async () => {
+  const fetchPersonalNotes = useCallback(async () => {
+    try {
+      console.log('Fetching personal notes for user:', currentUser?.id, currentUser?.username);
+      const [notesResponse, unreadCountResponse] = await Promise.all([
+        axios.get('/api/personal-notes/my-notes?page=0&size=20'),
+        axios.get('/api/personal-notes/unread-count')
+      ]);
+      
+      console.log('Personal notes response:', notesResponse.data);
+      console.log('Unread count response:', unreadCountResponse.data);
+      
+      setPersonalNotes(notesResponse.data.content || []);
+      setUnreadNotesCount(unreadCountResponse.data.unreadCount || 0);
+    } catch (error) {
+      console.error('Error fetching personal notes:', error);
+      console.error('Error details:', error.response?.data);
+      // Don't show error to user as this is a secondary feature
+    }
+  }, []);
+
+  const fetchDashboardData = useCallback(async () => {
     try {
       const [
         assignedResponse,
@@ -103,31 +123,11 @@ const EmployeeDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const fetchPersonalNotes = async () => {
-    try {
-      console.log('Fetching personal notes for user:', currentUser?.id, currentUser?.username);
-      const [notesResponse, unreadCountResponse] = await Promise.all([
-        axios.get('/api/personal-notes/my-notes?page=0&size=20'),
-        axios.get('/api/personal-notes/unread-count')
-      ]);
-      
-      console.log('Personal notes response:', notesResponse.data);
-      console.log('Unread count response:', unreadCountResponse.data);
-      
-      setPersonalNotes(notesResponse.data.content || []);
-      setUnreadNotesCount(unreadCountResponse.data.unreadCount || 0);
-    } catch (error) {
-      console.error('Error fetching personal notes:', error);
-      console.error('Error details:', error.response?.data);
-      // Don't show error to user as this is a secondary feature
-    }
-  };
+  }, [currentUser?.id, fetchPersonalNotes]);
 
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+  }, [fetchDashboardData]);
 
   const markNoteAsRead = async (noteId) => {
     try {
@@ -148,7 +148,7 @@ const EmployeeDashboard = () => {
     }
   };
 
-  const handleStatusUpdate = async (complaintId, newStatus) => {
+  const handleStatusUpdate = useCallback(async (complaintId, newStatus) => {
     try {
       await axios.put(`/api/complaints/${complaintId}/status`, {
         status: newStatus,
@@ -160,7 +160,7 @@ const EmployeeDashboard = () => {
       console.error('Error updating status:', error);
       alert('❌ Failed to update status: ' + (error.response?.data?.message || error.message));
     }
-  };
+  }, [currentUser?.fullName, fetchDashboardData]);
 
   const getStatusClass = (status) => {
     const statusClasses = {

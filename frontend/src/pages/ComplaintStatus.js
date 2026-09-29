@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
@@ -15,7 +15,7 @@ const ComplaintStatus = () => {
   });
   const [showUpdateForm, setShowUpdateForm] = useState(false);
 
-  const fetchComplaint = async () => {
+  const fetchComplaint = useCallback(async () => {
     try {
       const response = await axios.get(`/api/complaints/${complaintId}`);
       setComplaint(response.data);
@@ -29,11 +29,11 @@ const ComplaintStatus = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [complaintId]);
 
   useEffect(() => {
     fetchComplaint();
-  }, [complaintId]);
+  }, [complaintId, fetchComplaint]);
 
   const handleStatusUpdate = async (e) => {
     e.preventDefault();

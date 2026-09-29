@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 
@@ -14,19 +14,11 @@ const EmployeeRequests = () => {
     reason: ''
   });
 
-  useEffect(() => {
-    if (currentUser && isAdmin()) {
-      fetchRequests();
-    } else {
-      setLoading(false);
-    }
-  }, [currentUser, isAdmin, fetchRequests]);
-
-  const isAdmin = () => {
+  const isAdmin = useCallback(() => {
     return currentUser?.roles?.some(role => role.authority === 'ROLE_ADMIN');
-  };
+  }, [currentUser]);
 
-  const fetchRequests = async () => {
+  const fetchRequests = useCallback(async () => {
     try {
       const response = await axios.get('/api/employee-requests?status=PENDING');
       setRequests(response.data.content);
@@ -35,7 +27,15 @@ const EmployeeRequests = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (currentUser && isAdmin()) {
+      fetchRequests();
+    } else {
+      setLoading(false);
+    }
+  }, [currentUser, isAdmin, fetchRequests]);
 
   const handleSubmitRequest = async (e) => {
     e.preventDefault();
@@ -52,7 +52,7 @@ const EmployeeRequests = () => {
     }
   };
 
-  const handleUpdateStatus = async (requestId, status) => {
+  const handleUpdateStatus = useCallback(async (requestId, status) => {
     try {
       await axios.put(`/api/employee-requests/${requestId}/status`, { status });
       setSuccess(`Request ${status.toLowerCase()} successfully`);
@@ -60,7 +60,7 @@ const EmployeeRequests = () => {
     } catch (error) {
       setError('Failed to update request status');
     }
-  };
+  }, [fetchRequests]);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString();
