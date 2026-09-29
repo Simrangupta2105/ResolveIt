@@ -123,7 +123,7 @@ const EmployeeDashboard = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentUser?.id, fetchPersonalNotes]);
+  }, [currentUser?.id]);
 
   useEffect(() => {
     fetchDashboardData();
